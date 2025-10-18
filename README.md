@@ -268,6 +268,3 @@ The application includes Docker support for easy deployment:
 5. Ensure all tests pass
 6. Submit a pull request
 
-## License
-
-This project is licensed under the MIT License.
