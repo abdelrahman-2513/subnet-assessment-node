@@ -1,0 +1,49 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: cyshield-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: your_secure_root_password
+      MYSQL_DATABASE: cyshield
+      MYSQL_USER: cyshield_user
+      MYSQL_PASSWORD: cyshield_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - cyshield-network
+
+  app:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: cyshield-backend
+    restart: unless-stopped
+    environment:
+      DB_SERVER: mysql
+      DB_PORT: 3306
+      DB_NAME: cyshield
+      DB_USER: cyshield_user
+      DB_PASSWORD: cyshield_password
+      MYSQL_ROOT_PASSWORD: your_secure_root_password
+      JWT_KEY: YourSuperSecretJWTKeyThatIsAtLeast32CharactersLong!
+      JWT_ISSUER: Cyshield
+      JWT_AUDIENCE: CyshieldUsers
+      JWT_EXPIRE_MINUTES: 60
+      WHITELIST: http://localhost:4200
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mysql
+    networks:
+      - cyshield-network
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  cyshield-network:
+    driver: bridge
